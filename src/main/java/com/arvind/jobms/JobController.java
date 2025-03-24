@@ -1,5 +1,6 @@
 package com.arvind.jobms;
 
+import com.arvind.jobms.dto.JobDTO;
 import com.arvind.jobms.impl.JobServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,8 +15,8 @@ public class JobController {
     @Autowired
     private JobServiceImpl jobServiceImpl;
     @GetMapping
-    private ResponseEntity<List<Job>> getJobs(){
-        List<Job> jobs = jobServiceImpl.findAll();
+    private ResponseEntity<List<JobDTO>> getJobs(){
+        List<JobDTO> jobs = jobServiceImpl.findAll();
         return ResponseEntity.ok(jobs);
     }
     @PostMapping
@@ -24,10 +25,10 @@ public class JobController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Job created!!");
     }
     @GetMapping("/{id}")
-    private ResponseEntity<Job> getJob(@PathVariable Long id){
-        Job job = jobServiceImpl.getJob(id);
-        if(job!=null)
-            return new ResponseEntity<>(job,HttpStatus.OK);
+    private ResponseEntity<JobDTO> getJob(@PathVariable Long id){
+        JobDTO jobDTO = jobServiceImpl.getJob(id);
+        if(jobDTO!=null)
+            return new ResponseEntity<>(jobDTO,HttpStatus.OK);
         return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
     }
     @PutMapping("/{id}")
