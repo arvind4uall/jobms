@@ -1,5 +1,6 @@
 package com.arvind.jobms.impl;
 
+import com.arvind.jobms.AppConfig;
 import com.arvind.jobms.Job;
 import com.arvind.jobms.JobRepository;
 import com.arvind.jobms.JobService;
@@ -17,6 +18,8 @@ import java.util.stream.Collectors;
 public class JobServiceImpl implements JobService {
     @Autowired
     private JobRepository jobRepository;
+    @Autowired
+    private AppConfig appConfig;
     @Override
     public List<JobDTO> findAll() {
         List<Job> jobs = jobRepository.findAll();
@@ -29,8 +32,8 @@ public class JobServiceImpl implements JobService {
     }
 
     private JobDTO convertToDto(Job job){
-        RestTemplate restTemplate = new RestTemplate();
-        Company company = restTemplate.getForObject("http://localhost:8083/companies/"+job.getCompanyId(),Company.class);
+        RestTemplate restTemplate = appConfig.restTemplate();
+        Company company = restTemplate.getForObject("http://companyms/companies/"+job.getCompanyId(),Company.class);
         JobDTO jobDTO = new JobDTO();
         jobDTO.setId(job.getId());
         jobDTO.setTitle(job.getTitle());
