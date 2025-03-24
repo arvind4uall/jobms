@@ -4,6 +4,8 @@ import com.arvind.jobms.AppConfig;
 import com.arvind.jobms.Job;
 import com.arvind.jobms.JobRepository;
 import com.arvind.jobms.JobService;
+import com.arvind.jobms.clients.CompanyClient;
+import com.arvind.jobms.clients.ReviewClient;
 import com.arvind.jobms.dto.JobDTO;
 import com.arvind.jobms.external.Company;
 import com.arvind.jobms.external.Review;
@@ -24,6 +26,10 @@ public class JobServiceImpl implements JobService {
     private JobRepository jobRepository;
     @Autowired
     private AppConfig appConfig;
+    @Autowired
+    private CompanyClient companyClient;
+    @Autowired
+    private ReviewClient reviewClient;
     @Override
     public List<JobDTO> findAll() {
         List<Job> jobs = jobRepository.findAll();
@@ -37,13 +43,8 @@ public class JobServiceImpl implements JobService {
 
     private JobDTO convertToDto(Job job){
         RestTemplate restTemplate = appConfig.restTemplate();
-        Company company = restTemplate.getForObject("http://companyms/companies/"+job.getCompanyId(),Company.class);
-        ResponseEntity<List<Review>> reviewResponse = restTemplate.exchange("http://reviewms/reviews?companyId=" + job.getCompanyId(),
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<List<Review>>() {
-                });
-        List<Review> reviews = reviewResponse.getBody();
+        Company company = companyClient.getCompany(job.getCompanyId());
+        List<Review> reviews = reviewClient.getReviews(job.getCompanyId());
         JobDTO jobDTO = new JobDTO();
         jobDTO.setId(job.getId());
         jobDTO.setTitle(job.getTitle());
