@@ -6,7 +6,11 @@ import com.arvind.jobms.JobRepository;
 import com.arvind.jobms.JobService;
 import com.arvind.jobms.dto.JobDTO;
 import com.arvind.jobms.external.Company;
+import com.arvind.jobms.external.Review;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -34,6 +38,12 @@ public class JobServiceImpl implements JobService {
     private JobDTO convertToDto(Job job){
         RestTemplate restTemplate = appConfig.restTemplate();
         Company company = restTemplate.getForObject("http://companyms/companies/"+job.getCompanyId(),Company.class);
+        ResponseEntity<List<Review>> reviewResponse = restTemplate.exchange("http://reviewms/reviews?companyId=" + job.getCompanyId(),
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<Review>>() {
+                });
+        List<Review> reviews = reviewResponse.getBody();
         JobDTO jobDTO = new JobDTO();
         jobDTO.setId(job.getId());
         jobDTO.setTitle(job.getTitle());
@@ -42,6 +52,7 @@ public class JobServiceImpl implements JobService {
         jobDTO.setMaxSalary(job.getMaxSalary());
         jobDTO.setLocation(job.getLocation());
         jobDTO.setCompany(company);
+        jobDTO.setReviews(reviews);
         return jobDTO;
     }
 
