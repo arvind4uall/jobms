@@ -9,6 +9,7 @@ import com.arvind.jobms.clients.ReviewClient;
 import com.arvind.jobms.dto.JobDTO;
 import com.arvind.jobms.external.Company;
 import com.arvind.jobms.external.Review;
+import com.arvind.jobms.mapper.JobMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -45,16 +46,7 @@ public class JobServiceImpl implements JobService {
         RestTemplate restTemplate = appConfig.restTemplate();
         Company company = companyClient.getCompany(job.getCompanyId());
         List<Review> reviews = reviewClient.getReviews(job.getCompanyId());
-        JobDTO jobDTO = new JobDTO();
-        jobDTO.setId(job.getId());
-        jobDTO.setTitle(job.getTitle());
-        jobDTO.setDescription(job.getDescription());
-        jobDTO.setMinSalary(job.getMinSalary());
-        jobDTO.setMaxSalary(job.getMaxSalary());
-        jobDTO.setLocation(job.getLocation());
-        jobDTO.setCompany(company);
-        jobDTO.setReviews(reviews);
-        return jobDTO;
+        return JobMapper.mapJobWithCompanyAndReviewDTO(job,company,reviews);
     }
 
     @Override
