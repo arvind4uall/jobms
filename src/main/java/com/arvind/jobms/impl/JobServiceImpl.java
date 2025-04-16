@@ -10,6 +10,7 @@ import com.arvind.jobms.dto.JobDTO;
 import com.arvind.jobms.external.Company;
 import com.arvind.jobms.external.Review;
 import com.arvind.jobms.mapper.JobMapper;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -32,6 +33,7 @@ public class JobServiceImpl implements JobService {
     @Autowired
     private ReviewClient reviewClient;
     @Override
+    @CircuitBreaker(name = "companyBreaker")
     public List<JobDTO> findAll() {
         List<Job> jobs = jobRepository.findAll();
         return jobs.stream().map(this::convertToDto).collect(Collectors.toList());
